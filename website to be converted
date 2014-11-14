@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <style type="text/css">
+      html, body { height: 100%; margin: 0; padding: 0;}
+	  #map-canvas{height: 80%; margin: 0; padding: 0;}
+	  h1{text-align:center;}
+    </style>
+   
+	
+	<script>
+	var lat;
+	var lon;
+	var centerlat;
+	var centerlon;
+	 centerlat=41.413144;
+	 centerlon=-82.072414;
+	 var map;
+	 var marker;
+	 var up;
+	 var bu;
+	 var cc;
+	 var ic;
+	function loadScript() {
+		var script = document.createElement('script');
+		script.type = 'text/javascript';
+		script.src = 'https://maps.googleapis.com/maps/api/js?v=3.exp&' +
+			'callback=initialize';
+		document.body.appendChild(script);
+	}
+
+
+    
+	function GetLocation(){
+		if (navigator.geolocation) {
+			navigator.geolocation.getCurrentPosition(locationSuccess, locationError);
+		}
+		else{
+			showError("Your browser does not support Geolocation!");
+		}
+	}
+	function locationSuccess(position){
+		lat=position.coords.latitude;
+		lon=position.coords.longitude;
+		d=distance(lat,lon , 41.413144, -82.072414);
+		loadScript();
+		
+	
+	}
+	function locationError(error){
+		switch(error.code) {
+			case error.TIMEOUT:
+				showError("A timeout occured! Please try again!");
+				break;
+			case error.POSITION_UNAVAILABLE:
+				showError('We can\'t detect your location. Sorry!');
+				break;
+			case error.PERMISSION_DENIED:
+				showError('Please allow geolocation access for this to work.');
+				break;
+			case error.UNKNOWN_ERROR:
+				showError('An unknown error occured!');
+				break;
+		}
+
+	}	
+	
+	function showError(arg){
+		alert (arg);
+	}
+	function distance(alat1, alon1, alat2, alon2){
+		var R = 6371; // km
+		var dLat = (alat2-alat1) * 3.14159/180;
+		var dLon = (alon2-alon1) * 3.14159/180;
+		var lat1 = alat1 * 3.14159/180;
+		var lat2 = alat2 * 3.14159/180
+
+		var a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+			Math.sin(dLon/2) * Math.sin(dLon/2) * Math.cos(lat1) * Math.cos(lat2); 
+		var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+		
+		var d= R * c * 3280.84;
+			document.getElementById("location").innerHTML= alat1 + " " + alon1 + "<br>" + alat2 + " " + alon2 + "<br>" +d.toFixed(0)+" Steps Away";	
+			
+		return d;
+
+	}
+
+	var myVar = setInterval(function(){myTimer()}, 10000);
+
+function myTimer() {
+  initialize();
+}
+	
+    function initialize() {
+		var myLatlng = new google.maps.LatLng(lat,lon);
+        var mapOptions = {
+          center: {lat:centerlat,lng:centerlon},
+          zoom: 17,		  
+        };
+         map = new google.maps.Map(document.getElementById('map-canvas'),
+            mapOptions);
+			
+		// To add the marker to the map, use the 'map' property
+		 marker = new google.maps.Marker({
+			position: myLatlng,
+			draggable:false,
+			animation: google.maps.Animation.DROP,
+			map: map,
+			title:"You Are Here!"
+      });
+	  marker.setMap(map);
+	  google.maps.event.addListener(marker, 'click', toggleBounce);
+	  map.setMapTypeId(google.maps.MapTypeId.SATELLITE);
+     
+	}
+
+	function addMarker(arg){
+	
+		if(up!=null){
+		up.setMap(null);
+		}
+		if(bu!=null){
+		bu.setMap(null);
+		}
+		if(cc!=null){
+		cc.setMap(null);
+		}
+		if(ic!=null){
+		ic.setMap(null);
+		}	
+	
+	
+		if ( arg==1){
+		 up=new google.maps.Marker({
+			position: {lat:41.413183,lng: -82.070975},
+			draggable:false,
+			animation: google.maps.Animation.DROP,
+			map: map,
+			title:"UP Building!"
+		
+		});
+		up.setMap(map);
+		google.maps.event.addListener(up, 'click', toggleBounce);
+		}
+		if (arg==2){
+		 bu= new google.maps.Marker({
+			position: {lat:41.413471,lng: -82.072440},
+			draggable:false,
+			animation: google.maps.Animation.DROP,
+			map: map,
+			title:"BU Building!"
+		
+		});
+		bu.setMap(map);
+		  google.maps.event.addListener(bu, 'click', toggleBounce);
+		}
+		if (arg==3){
+		cc= new google.maps.Marker({
+			position: {lat:41.413359, lng:-82.073499},
+			draggable:false,
+			animation: google.maps.Animation.DROP,
+			map: map,
+			title:"College Center Building!"
+		
+		});
+			cc.setMap(map);
+		google.maps.event.addListener(cc, 'click', toggleBounce);
+		}
+		if(arg==4){
+		 ic= new google.maps.Marker({
+			position: {lat:41.414016, lng:-82.073883},
+			draggable:false,
+			animation: google.maps.Animation.DROP,
+			map: map,
+			title:"Library Building!"		
+		
+		});
+		ic.setMap(map);
+		google.maps.event.addListener(ic, 'click', toggleBounce);
+		}		
+		
+		
+		
+	}
+	
+	function toggleBounce() {
+
+		if (marker.getAnimation() != null) {
+			marker.setAnimation(null);
+		} 
+		else {
+			marker.setAnimation(google.maps.Animation.BOUNCE);
+		}
+		
+	}
+	
+	window.onload=GetLocation;
+	//window.onload =  function(){ setInterval( function(){ initialize();window.onload() },10000) };
+
+
+
+	</script>
+  </head>
+  <body>
+	<header>
+		<h1>LCCC Interactive Location Map</h1>
+	</header>
+	<form>
+			<input type="button" onclick="addMarker(1);" value="University Partnership"/>
+			<input type="button" onclick="addMarker(2);" value="Business"/>
+			<input type="button" onclick="addMarker(3);" value="College Center"/>
+			<input type="button" onclick="addMarker(4);" value="Library"/>
+		</form>
+	<div id="location"></div>
+<div id="map-canvas"></div>
+		
+
+  </body>
+</html>
+
+
+<!--API Key: AIzaSyBOYH9U0dPkFQ4VrXjrONF-JQeLRRXS6vE -->
